@@ -88,7 +88,9 @@ app.post("/api/verify", (req, res) => {
         verified: true,
       });
     } else {
-      verified: false;
+      res.json({
+        verified: false,
+      });
     }
   } catch (err) {
     console.log(err);
