@@ -4,10 +4,13 @@ const JsonDB = require("node-json-db").JsonDB;
 const Config = require("node-json-db/dist/lib/JsonDBConfig").Config;
 const { v4: uuidv4 } = require("uuid");
 const speakeasy = require("speakeasy");
+var QRCode = require("qrcode");
+var cors = require("cors");
 
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 //database configuration
 const dbConfig = new Config("Database", true, false, "/");
@@ -50,11 +53,16 @@ app.post("/api/register", (req, res) => {
     DB.push(path, { id, name, temp_secret });
 
     //send user id and base32 key to user
-
-    res.json({
-      id,
-      name,
-      secret: temp_secret.base32,
+    QRCode.toDataURL(temp_secret.otpauth_url, function (err, url) {
+      console.log(url);
+      if (err) {
+        res.json({
+          error: "something wrong can't show QR",
+        });
+      }
+      return res.json({
+        url,
+      });
     });
   } catch (err) {
     console.log(err);
